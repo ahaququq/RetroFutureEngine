@@ -2,16 +2,16 @@
 
 #include <string>
 
-std::string escape(std::string code, std::string esc = "m");
+std::string escape(const std::string &code, const std::string &esc = "m");
 std::string color(unsigned char color, bool bg = false, bool bright = false);
 
-void message(std::string title, std::string message, int title_color = 0b110);
-void  ok (std::string message);
-void busy(std::string message);
-void info(std::string message);
-void warn(std::string message);
-void fail(std::string message, std::string details = "");
-void done(std::string message);
+void message(const std::string &title, const std::string &message, int title_color = 0b110);
+void  ok (const std::string &msg);
+void busy(const std::string &msg);
+void info(const std::string &msg);
+void warn(const std::string &msg);
+void done(const std::string &msg);
+void fail(const std::string &msg, const std::string &details = "");
 void clear_line(int mode = 2, bool ret = true);
 
 void progress();

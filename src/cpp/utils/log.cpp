@@ -2,32 +2,31 @@
 
 #include <iostream>
 
-std::string escape(std::string code, std::string esc) {
+std::string escape(const std::string &code, const std::string &esc) {
 	return std::string("\033[") + code + esc;
 }
 
-std::string color(unsigned char color, bool bg, bool bright) {
+std::string color(const unsigned char color, const bool bg, const bool bright) {
 	return escape(std::to_string(30 + bg * 10 + bright * 60 + color));
 }
 
-void clear_line(int mode, bool ret) {
+void message(const std::string &title, const std::string &message, const int title_color) {
+	clear_line();
+	std::cout << color(0b111, false, true) << "[" << color(title_color) << title << color(0b111) << "] " << escape("0") << message << "\n" << std::flush;
+}
+
+void  ok (const std::string &msg) { message("  OK  ", msg, 0b010); }
+void busy(const std::string &msg) { message(" BUSY ", msg, 0b110); }
+void info(const std::string &msg) { message(" INFO ", msg, 0b100); }
+void warn(const std::string &msg) { message(" WARN ", msg, 0b011); }
+void done(const std::string &msg) { message(" DONE ", msg, 0b010); }
+void fail(const std::string &msg, const std::string &details) {
+	message("FAILED", msg, 0b001);
+	if (!details.empty()) std::cerr << "[FAILED] \n  Err: " << msg << std::flush;
+}
+
+void clear_line(const int mode, const bool ret) {
 	std::cout << (ret ? "\r" : "") << escape(std::to_string(mode), "K");
-}
-
-void message(std::string title, std::string message, int title_color) {
-    clear_line();
-    std::cout << color(0b111, false, true) << "[" << color(title_color) << title << color(0b111) << "] " << escape("0") << message << "\n" << std::flush;
-}
-
-void  ok (std::string msg) { message("  OK  ", msg, 0b010); }
-void busy(std::string msg) { message(" BUSY ", msg, 0b110); }
-void done(std::string msg) { message(" DONE ", msg, 0b010); }
-void info(std::string msg) { message(" INFO ", msg, 0b100); }
-void warn(std::string msg) { message(" WARN ", msg, 0b011); }
-
-void fail(std::string msg, std::string details) {
-    message("FAILED", msg, 0b001);
-	if (details != "") std::cerr << "[FAILED] \n  Err: " << message << std::flush;
 }
 
 int progress_counter = 0;
@@ -44,6 +43,7 @@ void progress() {
 		case 4: std::cout << "  *** "; break;
 		case 5: std::cout << "   ***"; break;
 		case 6: std::cout << "    **"; break;
+		default: break;
 	}
 	
 	std::cout << color(0b111) << "] " << escape("0");
