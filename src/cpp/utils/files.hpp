@@ -2,4 +2,4 @@
 
 #include <string>
 
-std::string load_file(std::string name);
+std::string load_file(const std::string& name);

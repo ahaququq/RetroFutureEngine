@@ -5,7 +5,7 @@
 
 #include "utils/log.hpp"
 
-std::string load_file(std::string name) {
+std::string load_file(const std::string& name) {
 	std::ifstream file{name};
 	
 	if (!file.is_open()) {
