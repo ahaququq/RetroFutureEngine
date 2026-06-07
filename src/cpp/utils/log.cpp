@@ -10,19 +10,22 @@ std::string color(const unsigned char color, const bool bg, const bool bright) {
 	return escape(std::to_string(30 + bg * 10 + bright * 60 + color));
 }
 
-void message(const std::string &title, const std::string &message, const int title_color) {
+inline void message(const std::string &title, const std::string &message, const int title_color, const bool new_line) {
 	clear_line();
-	std::cout << color(0b111, false, true) << "[" << color(title_color) << title << color(0b111) << "] " << escape("0") << message << "\n" << std::flush;
+	std::cout << color(0b111, false, true) << "[" << color(title_color) << title << color(0b111, false, true) << "] " << escape("0") << message;
+	if (new_line) std::cout << "\n";
+	std::cout << std::flush;
 }
 
 void  ok (const std::string &msg) { message("  OK  ", msg, 0b010); }
-void busy(const std::string &msg) { message(" BUSY ", msg, 0b110); }
+void busy(const std::string &msg) { message(" BUSY ", msg, 0b110, false); }
 void info(const std::string &msg) { message(" INFO ", msg, 0b100); }
 void warn(const std::string &msg) { message(" WARN ", msg, 0b011); }
 void done(const std::string &msg) { message(" DONE ", msg, 0b010); }
 void fail(const std::string &msg, const std::string &details) {
 	message("FAILED", msg, 0b001);
-	if (!details.empty()) std::cerr << "[FAILED] \n  Err: " << msg << std::flush;
+	// message("FAILED", details, 0b001);
+	if (!details.empty()) std::cerr << "[FAILED] Error message: \n  " << details << "\n" << std::flush;
 }
 
 void clear_line(const int mode, const bool ret) {

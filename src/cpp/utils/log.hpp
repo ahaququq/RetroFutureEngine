@@ -5,7 +5,7 @@
 std::string escape(const std::string &code, const std::string &esc = "m");
 std::string color(unsigned char color, bool bg = false, bool bright = false);
 
-void message(const std::string &title, const std::string &message, int title_color = 0b110);
+inline void message(const std::string &title, const std::string &message, int title_color = 0b110, bool new_line = true);
 void  ok (const std::string &msg);
 void busy(const std::string &msg);
 void info(const std::string &msg);

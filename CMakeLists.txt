@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.25)
 
 project(RetroFutureEngine)
 
-add_executable(GuiMain)
+add_executable(GuiMain
+	src/cpp/engine.cpp
+	src/cpp/engine.hpp)
 
 target_sources(GuiMain
 	PRIVATE
