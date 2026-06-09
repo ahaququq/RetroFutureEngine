@@ -20,3 +20,6 @@ CMakeUserPresets.json
 
 build
 .vscode
+GPATH
+GRTAGS
+GTAGS
