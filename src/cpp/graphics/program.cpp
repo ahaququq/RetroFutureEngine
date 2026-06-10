@@ -74,3 +74,7 @@ void program::use() {
 	}
 	glUseProgram(program_handle);
 }
+
+GLint program::getUniformLocation(std::string name) {
+	return glGetUniformLocation(program_handle, name.c_str());
+}

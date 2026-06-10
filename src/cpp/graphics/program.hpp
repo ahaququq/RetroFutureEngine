@@ -29,4 +29,5 @@ public:
     void clearShaders();
     bool link();
     void use();
+    GLint getUniformLocation(std::string name);
 };
