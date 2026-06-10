@@ -1,6 +1,3 @@
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
-
 #include "engine.hpp"
 #include "utils/log.hpp"
 
@@ -8,7 +5,13 @@ GLFWwindow* main_window;
 
 int main() {
 	busy("Starting RetroFutureEngine...");
-	const int ret = engine{}.main();
+	int ret;
+	try {
+		ret = engine{}.main();
+	} catch (...) {
+		fail("Exception thrown out of RetroFutureEngine!");
+	}
+
 	if (ret) {
 		fail("Exited RetroFutureEngine (With errors!)", "engine::main() returned " + std::to_string(ret));
 	} else {
