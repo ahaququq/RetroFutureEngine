@@ -5,6 +5,14 @@
 
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 engine::engine() {
 	ok("Initialised RetroFutureEngine");
 }
@@ -21,13 +29,16 @@ int engine::main() {
 	main_window.swapInterval(1);
 	int frame = 0;
 	while (!main_window.shouldClose()) {
+		main_window.viewport();
 		glClearColor(1.0f, 0.5f, 0.25f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		material.use();
+		glm::mat4 mv_mat = glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(frame), glm::vec3(0, 0, 1)) * glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(5.1f * frame), glm::vec3(0, 1, 0));
+		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
 		glBegin(GL_TRIANGLES);
 		glVertex3f(-0.5f, -0.5f, 0.0f);
 		glVertex3f( 0.5f, -0.5f, 0.0f);
-		glVertex3f( 0.0f,  0.5f, 0.0f);
+		glVertex3f( 0.5f,  0.5f, 0.0f);
 		glEnd();
 
 		main_window.swapBuffers();

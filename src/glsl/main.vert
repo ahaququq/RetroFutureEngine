@@ -6,8 +6,7 @@ attribute vec4 color;
 //out vec3 outColor;
 uniform mat4 model_view_mat;
 void main() {
-	// gl_Position = model_view_mat * position;
+	gl_Position = model_view_mat * position;
+	// gl_Position = position;
 	// gl_FrontColor = color;
-	//gl_Position = position;
-	gl_Position = gl_Vertex;
 }
