@@ -19,6 +19,8 @@ add_executable(GuiMain
 	src/cpp/graphics/shader.hpp
 	src/cpp/graphics/program.cpp
 	src/cpp/graphics/program.hpp
+	src/cpp/graphics/buffer.cpp
+	src/cpp/graphics/buffer.hpp
 )
 
 target_sources(GuiMain

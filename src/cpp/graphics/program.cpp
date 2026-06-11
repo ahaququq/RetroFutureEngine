@@ -78,3 +78,7 @@ void program::use() {
 GLint program::getUniformLocation(std::string name) {
 	return glGetUniformLocation(program_handle, name.c_str());
 }
+
+GLint program::getAttribLocation(std::string name) {
+	return glGetAttribLocation(program_handle, name.c_str());
+}

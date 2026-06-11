@@ -30,4 +30,5 @@ public:
     bool link();
     void use();
     GLint getUniformLocation(std::string name);
+    GLint getAttribLocation(std::string name);
 };
