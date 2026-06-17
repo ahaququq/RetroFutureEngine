@@ -8,5 +8,5 @@ uniform mat4 model_view_mat;
 void main() {
 	gl_Position = model_view_mat * position;
 	// gl_Position = position;
-	// gl_FrontColor = color;
+	gl_FrontColor = color;
 }
