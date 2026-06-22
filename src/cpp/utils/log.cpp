@@ -36,6 +36,7 @@ int progress_counter = 0;
 int progress_subcounter = 0;
 
 void progress() {
+	clear_line();
 	std::cout << "\r" << color(0b111, false, true) << "[" << color(0b110);
 	
 	switch (progress_counter) {
