@@ -8,6 +8,7 @@ add_executable(GuiMain
 	src/cpp/utils/log.cpp
 	src/cpp/utils/log.hpp
 	src/cpp/utils/gl.hpp
+	src/cpp/utils/glm.hpp
 	src/cpp/engine.cpp
 	src/cpp/engine.hpp
 	src/cpp/glfw_context.cpp
@@ -21,6 +22,12 @@ add_executable(GuiMain
 	src/cpp/graphics/program.hpp
 	src/cpp/graphics/buffer.cpp
 	src/cpp/graphics/buffer.hpp
+	src/cpp/objects/camera.cpp
+	src/cpp/objects/camera.hpp
+	src/cpp/transform/transform.cpp
+	src/cpp/transform/transform.hpp
+	src/cpp/transform/pos_transform.cpp
+	src/cpp/transform/pos_transform.hpp
 )
 
 target_sources(GuiMain
