@@ -86,3 +86,38 @@ glm::vec3 transform::scaled(glm::vec3 vec) const {
 glm::vec3 transform::inv_scaled(glm::vec3 vec) const {
     return glm::xyz(inv_matrix(false, false, true) * glm::vec4(vec, 1));
 }
+
+
+glm::vec3 transform::get_position() const {
+    return translated(glm::vec3(0, 0, 0));
+}
+
+glm::vec3 transform::get_scale() const {
+    return scaled(glm::vec3(0, 0, 0));
+}
+
+
+glm::vec3 transform::forward(bool do_scale) const {
+    return apply(glm::vec3(0, 1, 0), false, true, do_scale);
+}
+
+glm::vec3 transform::right(bool do_scale) const {
+    return apply(glm::vec3(1, 0, 0), false, true, do_scale);
+}
+
+glm::vec3 transform::up(bool do_scale) const {
+    return apply(glm::vec3(0, 0, 1), false, true, do_scale);
+}
+
+
+glm::vec3 transform::forward_end(bool do_scale) const {
+    return apply(glm::vec3(0, 1, 0), true, true, do_scale);
+}
+
+glm::vec3 transform::right_end(bool do_scale) const {
+    return apply(glm::vec3(1, 0, 0), true, true, do_scale);
+}
+
+glm::vec3 transform::up_end(bool do_scale) const {
+    return apply(glm::vec3(0, 0, 1), true, true, do_scale);
+}

@@ -30,4 +30,15 @@ public:
 
 	glm::vec3 scaled    (glm::vec3 vec) const;
 	glm::vec3 inv_scaled(glm::vec3 vec) const;
+
+	glm::vec3 get_position() const;
+	glm::vec3 get_scale() const;
+
+	glm::vec3 forward(bool scaled = false) const;
+	glm::vec3 right  (bool scaled = false) const;
+	glm::vec3 up     (bool scaled = false) const;
+
+	glm::vec3 forward_end(bool scaled = false) const;
+	glm::vec3 right_end  (bool scaled = false) const;
+	glm::vec3 up_end     (bool scaled = false) const;
 };
