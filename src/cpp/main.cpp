@@ -10,6 +10,7 @@ int main() {
 		ret = engine{}.main();
 	} catch (...) {
 		fail("Exception thrown out of RetroFutureEngine!");
+		return 1;
 	}
 
 	if (ret) {

@@ -7,24 +7,24 @@
 
 class buffer {
 private:
-    GLuint handle;
-    GLenum bount_to;
+    GLuint handle{};
+    GLenum bound_to;
 public:
     window& ctx;
 
-    buffer(window& context);
+	explicit buffer(window& context);
     ~buffer();
 
     void bind(GLenum target);
 
     template <typename T>
-    void data(const std::vector<T>& data, GLenum usage = GL_STATIC_DRAW) {
-        glBufferData(bount_to, data.size() * sizeof(data[0]), &data[0], usage);
-    };
+    void data(const std::vector<T>& data, const GLenum usage = GL_STATIC_DRAW) {
+        glBufferData(bound_to, data.size() * sizeof(data[0]), &data[0], usage);
+    }
 
     template <typename T>
-    void data(GLenum target, const std::vector<T>& data, GLenum usage = GL_STATIC_DRAW) {
+    void data(const GLenum target, const std::vector<T>& data, const GLenum usage = GL_STATIC_DRAW) {
         bind(target);
         glBufferData(target, data.size() * sizeof(data[0]), &data[0], usage);
-    };
+    }
 };

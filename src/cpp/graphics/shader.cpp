@@ -4,17 +4,17 @@
 #include "utils/log.hpp"
 #include "program.hpp"
 
-shader::shader(window& context, GLenum type): ctx(context) {
+shader::shader(window& context, const GLenum type): ctx(context) {
     ctx.makeContextCurrent();
     handle = glCreateShader(type);
 }
 
-shader::shader(window& context, GLenum type, std::string source, const std::string& id): shader(context, type) {
+shader::shader(window& context, const GLenum type, const std::string &source, const std::string& id): shader(context, type) {
     addSource(source);
     name = id;
 }
 
-shader::shader(program& add_to, GLenum type, std::string source, const std::string& id): 
+shader::shader(program& add_to, const GLenum type, const std::string &source, const std::string& id):
     shader(add_to.ctx, type, source, id) 
 {
     add_to.addShader(*this);
@@ -25,12 +25,12 @@ shader::~shader() {
     glDeleteShader(handle);
 }
 
-shader shader::fromFile(window& context, GLenum type, const std::string& name) {
-    return shader(context, type, load_file(name), name);
+shader shader::fromFile(window& context, const GLenum type, const std::string& name) {
+    return {context, type, load_file(name), name};
 }
 
-shader shader::fromFile(program& add_to, GLenum type, const std::string& name) {
-    return shader(add_to, type, load_file(name), name);
+shader shader::fromFile(program& add_to, const GLenum type, const std::string& name) {
+    return {add_to, type, load_file(name), name};
 }
 
 void shader::clearSources() {
@@ -38,12 +38,12 @@ void shader::clearSources() {
     compiled = false;
 }
 
-void shader::addSource(std::string source) {
+void shader::addSource(const std::string& source) {
     sources.emplace_back(source);
     compiled = false;
 }
 
-void shader::addFile(std::string file) {
+void shader::addFile(const std::string &file) {
     addSource(load_file(file));
 }
 
@@ -53,16 +53,16 @@ bool shader::compile() {
         return true;
     }
     ctx.makeContextCurrent();
-    const char** cstrs = new const char*[sources.size()];
-    int* counts = new int[sources.size()];
+	const auto cstrs = new const char*[sources.size()];
+    const auto counts = new int[sources.size()];
 
     busy("Attaching sources...");
     for (int i = 0; i < sources.size(); i++) {
         cstrs[i] = sources[i].c_str();
-        counts[i] = sources[i].size();
+        counts[i] = static_cast<int>(sources[i].size());
     }
 
-    glShaderSource(handle, sources.size(), cstrs, counts);
+    glShaderSource(handle, static_cast<int>(sources.size()), cstrs, counts);
     busy("Compiling shader...");
     glCompileShader(handle);
 
@@ -82,7 +82,7 @@ bool shader::compile() {
     int length;
     glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length);
 
-    char* log = new char[length];
+    const auto log = new char[length];
 
     glGetShaderInfoLog(handle, length, &length, log);
 
@@ -94,7 +94,7 @@ bool shader::compile() {
     return false;
 }
 
-void shader::attach(GLuint program) const {
+void shader::attach(const GLuint program) const {
     ctx.makeContextCurrent();
     glAttachShader(program, handle);
 }

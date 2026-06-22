@@ -37,7 +37,7 @@ int progress_subcounter = 0;
 
 void progress() {
 	clear_line();
-	std::cout << "\r" << color(0b111, false, true) << "[" << color(0b110);
+	std::cout << color(0b111, false, true) << "[" << color(0b110);
 	
 	switch (progress_counter) {
 		case 0: std::cout << "*    *"; break;
@@ -50,7 +50,7 @@ void progress() {
 		default: break;
 	}
 	
-	std::cout << color(0b111) << "] " << escape("0");
+	std::cout << color(0b111, false, true) << "] " << escape("0");
 	
 	if (progress_subcounter++ >= 10) {
 		progress_counter++;

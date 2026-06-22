@@ -15,18 +15,18 @@ private:
 public:
     glfw_context& ctx;
     
-    window(glfw_context& context, int width = 640, int height = 480, std::string title = "Window");
+    window(glfw_context& context, int width = 640, int height = 480, const std::string &title = "Window");
     window(const window &) = delete;
     ~window();
 
-    bool shouldClose();
-    void shouldClose(bool close);
-    void swapBuffers();
-    void viewport();
+    [[nodiscard]] bool shouldClose() const;
+    void shouldClose(bool close) const;
+    void swapBuffers() const;
+    void viewport() const;
 
-    glm::ivec2 getFramebufferSize();
-    int getKey(int key);
+    [[nodiscard]] glm::ivec2 getFramebufferSize() const;
+    [[nodiscard]] int getKey(int key) const;
 
-    void makeContextCurrent();
-    void swapInterval(int interval);
+    void makeContextCurrent() const;
+    void swapInterval(int interval) const;
 };

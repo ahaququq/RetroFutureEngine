@@ -4,41 +4,43 @@
 
 class transform {
 public:
-	virtual glm::mat4 translation() const;
-	virtual glm::mat4 rotation() const;
-	virtual glm::mat4 scale() const;
+	virtual ~transform() = default;
 
-	virtual bool has_translation() const;
-	virtual bool has_rotation() const;
-	virtual bool has_scale() const;
+	[[nodiscard]] virtual glm::mat4 translation() const;
+	[[nodiscard]] virtual glm::mat4 rotation() const;
+	[[nodiscard]] virtual glm::mat4 scale() const;
 
-	virtual bool can_translate() const;
-	virtual bool can_rotate() const;
-	virtual bool can_scale() const;
+	[[nodiscard]] virtual bool has_translation() const;
+	[[nodiscard]] virtual bool has_rotation() const;
+	[[nodiscard]] virtual bool has_scale() const;
+
+	[[nodiscard]] virtual bool can_translate() const;
+	[[nodiscard]] virtual bool can_rotate() const;
+	[[nodiscard]] virtual bool can_scale() const;
 	
-	glm::mat4 matrix    (bool translate = true, bool rotate = true, bool scale = true) const;
-	glm::mat4 inv_matrix(bool translate = true, bool rotate = true, bool scale = true) const;
+	[[nodiscard]] glm::mat4 matrix    (bool do_translate = true, bool do_rotate = true, bool do_scale = true) const;
+	[[nodiscard]] glm::mat4 inv_matrix(bool do_translate = true, bool do_rotate = true, bool do_scale = true) const;
 
-	glm::vec3 apply    (glm::vec3 vec, bool translate = true, bool rotate = true, bool scale = true) const;
-	glm::vec3 inv_apply(glm::vec3 vec, bool translate = true, bool rotate = true, bool scale = true) const;
+	[[nodiscard]] glm::vec3 apply    (glm::vec3 vec, bool do_translate = true, bool do_rotate = true, bool do_scale = true) const;
+	[[nodiscard]] glm::vec3 inv_apply(glm::vec3 vec, bool do_translate = true, bool do_rotate = true, bool do_scale = true) const;
 
-	glm::vec3 translated    (glm::vec3 vec) const;
-	glm::vec3 inv_translated(glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 translated    (glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 inv_translated(glm::vec3 vec) const;
 
-	glm::vec3 rotated    (glm::vec3 vec) const;
-	glm::vec3 inv_rotated(glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 rotated    (glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 inv_rotated(glm::vec3 vec) const;
 
-	glm::vec3 scaled    (glm::vec3 vec) const;
-	glm::vec3 inv_scaled(glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 scaled    (glm::vec3 vec) const;
+	[[nodiscard]] glm::vec3 inv_scaled(glm::vec3 vec) const;
 
-	glm::vec3 get_position() const;
-	glm::vec3 get_scale() const;
+	[[nodiscard]] glm::vec3 get_position() const;
+	[[nodiscard]] glm::vec3 get_scale() const;
 
-	glm::vec3 forward(bool scaled = false) const;
-	glm::vec3 right  (bool scaled = false) const;
-	glm::vec3 up     (bool scaled = false) const;
+	[[nodiscard]] glm::vec3 forward(bool do_scale = false) const;
+	[[nodiscard]] glm::vec3 right  (bool do_scale = false) const;
+	[[nodiscard]] glm::vec3 up     (bool do_scale = false) const;
 
-	glm::vec3 forward_end(bool scaled = false) const;
-	glm::vec3 right_end  (bool scaled = false) const;
-	glm::vec3 up_end     (bool scaled = false) const;
+	[[nodiscard]] glm::vec3 forward_end(bool do_scale = false) const;
+	[[nodiscard]] glm::vec3 right_end  (bool do_scale = false) const;
+	[[nodiscard]] glm::vec3 up_end     (bool do_scale = false) const;
 };

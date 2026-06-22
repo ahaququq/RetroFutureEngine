@@ -13,14 +13,15 @@ private:
     GLuint program_handle;
     struct shader_ref {
         shader& ref;
-        shader_ref(shader& sh): ref(sh) {}
+		// ReSharper disable once CppNonExplicitConvertingConstructor
+		shader_ref(shader& sh): ref(sh) {}
     };
     std::vector<shader_ref> shaders;
     bool linked = false;
 public:
     window& ctx;
 
-    program(window& context);
+	explicit program(window& context);
     program(const program &) = delete;
     program(program&&) = default;
     ~program();
@@ -28,7 +29,7 @@ public:
     void addShader(shader& sh);
     void clearShaders();
     bool link();
-    void use();
-    GLint getUniformLocation(std::string name);
-    GLint getAttribLocation(std::string name);
+    void use() const;
+    [[nodiscard]] GLint getUniformLocation(const std::string &name) const;
+    [[nodiscard]] GLint getAttribLocation(const std::string &name) const;
 };

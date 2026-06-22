@@ -19,8 +19,8 @@ public:
     window& ctx;
 
     shader(window& context, GLenum type);
-    shader(window& context, GLenum type, std::string source, const std::string& id = "");
-    shader(program& add_to, GLenum type, std::string source, const std::string& id = "");
+    shader(window& context, GLenum type, const std::string &source, const std::string& id = "");
+    shader(program& add_to, GLenum type, const std::string &source, const std::string& id = "");
     shader(const shader &) = delete;
     shader(shader&&) = default;
     ~shader();
@@ -29,8 +29,8 @@ public:
     static shader fromFile(program& add_to, GLenum type, const std::string& name);
 
     void clearSources();
-    void addSource(std::string source);
-    void addFile(std::string file);
+    void addSource(const std::string& source);
+    void addFile(const std::string &file);
     
     bool compile();
     void attach(GLuint program) const;
