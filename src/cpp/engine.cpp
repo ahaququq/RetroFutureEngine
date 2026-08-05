@@ -30,9 +30,9 @@ int engine::main() {
 	main_window.swapInterval(1);
 	int frame = 0;
 
-	buffer vertex = buffer(main_window);
-	buffer color = buffer(main_window);
-	buffer index = buffer(main_window);
+	buffer buff_vertex = buffer(main_window);
+	buffer buff_color = buffer(main_window);
+	buffer buff_index = buffer(main_window);
 
 	std::vector<glm::vec3> vertices = {
 		{-0.5, -0.5, -0.0},
@@ -49,15 +49,15 @@ int engine::main() {
 		{1, 1, 0}
 	};
 
-	vertex.data<glm::vec3>(GL_ARRAY_BUFFER, vertices);
+	buff_vertex.data<glm::vec3>(GL_ARRAY_BUFFER, vertices);
 	glEnableVertexAttribArray(material.getAttribLocation("position"));
 	glVertexAttribPointer(material.getAttribLocation("position"), 3, GL_FLOAT, true, 0, nullptr);
 
-	color.data<glm::vec3>(GL_ARRAY_BUFFER, colors);
+	buff_color.data<glm::vec3>(GL_ARRAY_BUFFER, colors);
 	glEnableVertexAttribArray(material.getAttribLocation("color"));
 	glVertexAttribPointer(material.getAttribLocation("color"), 3, GL_FLOAT, true, 0, nullptr);
 
-	index.data<unsigned int>(GL_ELEMENT_ARRAY_BUFFER, {
+	buff_index.data<unsigned int>(GL_ELEMENT_ARRAY_BUFFER, {
 		0, 1, 3,
 		0, 2, 3
 	});
@@ -70,17 +70,9 @@ int engine::main() {
 	glm::mat4 view_mat;
 	glm::mat4 mv_mat = model_mat * view_mat;
 
-	// cam0.pos.z = 2;
-	// cam0.rot = glm::rotate(glm::identity<glm::quat>(), {
-	// 	glm::radians(0.0),
-	// 	glm::radians(0.0),
-	// 	glm::radians(0.0)
-	// });
 	cam0.transform.pitch = 0;
 	cam0.transform.yaw   = 0;
 	cam0.transform.roll  = 0;
-
-	// cam0.rot = glm::identity<glm::quat>();
 
 	info("Cam  Matrix: " + glm::to_string(cam0.world_to_camera()));
 	info("View Matrix: " + glm::to_string(cam0.camera_to_view(main_window.getFramebufferSize())));
@@ -90,26 +82,6 @@ int engine::main() {
 		glClearColor(1.0f, 0.5f, 0.25f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		material.use();
-
-		// cam0.rot = glm::normalize(glm::quat(glm::vec3(
-		// 	glm::radians<float>(0.0),
-		// 	glm::radians<float>(0.1),
-		// 	glm::radians<float>(0.5)
-		// )) * cam0.rot);
-
-		// cam0.rot = glm::rotate(
-		// 	glm::identity<glm::quat>(),
-		// 	glm::mod(
-		// 		glm::eulerAngles(cam0.rot) + glm::radians(glm::vec3(
-		// 			0.5, // Clockwise around Y+
-		// 			0.1, // Clockwise around X+
-		// 			5.0  // Clockwise around Z+
-		// 		)) + glm::vec3(glm::pi<float>()) * glm::vec3(1, 0.5, 1),
-		// 		glm::vec3(glm::pi<float>()) * glm::vec3(2, 1, 2)
-		// 	) - glm::vec3(glm::pi<float>()) * glm::vec3(1, 0.5, 1)
-		// );
-
-		cam0.rotate(glm::vec3(0.0, 0.0, 0.0));
 
 		const float speed = 0.2;
 
@@ -135,29 +107,23 @@ int engine::main() {
 		}
 
 		if (main_window.getKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(0.0, 0.0, -1.0 * -(cam0.upside_down() * 2 - 1)));
 			cam0.transform.rot_yaw(-1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		if (main_window.getKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(0.0, 0.0, 1.0 * -(cam0.upside_down() * 2 - 1)));
 			cam0.transform.rot_yaw(1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		
 		if (main_window.getKey(GLFW_KEY_UP) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(-1.0 * -(cam0.upside_down() * 2 - 1), 0.0, 0.0));
 			cam0.transform.rot_pitch_clamped(-1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		if (main_window.getKey(GLFW_KEY_DOWN) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(1.0 * -(cam0.upside_down() * 2 - 1), 0.0, 0.0));
 			cam0.transform.rot_pitch_clamped(1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		
 		if (main_window.getKey(GLFW_KEY_E) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(0.0, -1.0, 0.0));
 			cam0.transform.rot_roll(-1.0);
 		}
 		if (main_window.getKey(GLFW_KEY_Q) == GLFW_PRESS) {
-			cam0.rotate(glm::vec3(0.0, 1.0, 0.0));
 			cam0.transform.rot_roll(1.0);
 		}
 

@@ -19,5 +19,4 @@ public:
     [[nodiscard]] bool upside_down() const;
     [[nodiscard]] glm::mat4 camera_inverse_rotation() const;
     [[nodiscard]] glm::mat4 camera_to_view(glm::ivec2 viewport) const;
-    void rotate(glm::vec3 axies);
 };

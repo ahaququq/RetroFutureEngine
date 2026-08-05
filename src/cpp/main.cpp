@@ -1,7 +1,7 @@
 #include "engine.hpp"
 #include "utils/log.hpp"
 
-GLFWwindow* main_window;
+// GLFWwindow* main_window;
 
 int main() {
 	busy("Starting RetroFutureEngine...");
