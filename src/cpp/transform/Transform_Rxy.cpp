@@ -10,9 +10,6 @@ Transform_Rxy::Transform_Rxy(const Transform_Rx &from)
 Transform_Rxy::Transform_Rxy(const Transform_Ry &from)
 	: Transform_Rxy(0, from.yaw) {}
 
-Transform_Rxy::operator Transform_Rx() const { return {pitch}; }
-Transform_Rxy::operator Transform_Ry() const { return {yaw}; }
-
 glm::mat4 Transform_Rxy::rotation() const {
 	return yaw_matrix() * pitch_matrix();
 }

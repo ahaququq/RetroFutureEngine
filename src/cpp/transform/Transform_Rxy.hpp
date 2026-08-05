@@ -13,9 +13,6 @@ class Transform_Rxy:
 	explicit Transform_Rxy(const Transform_Rx &from);
 	explicit Transform_Rxy(const Transform_Ry &from);
 
-	explicit operator Transform_Rx() const;
-	explicit operator Transform_Ry() const;
-
 	[[nodiscard]] glm::mat4 rotation() const override;
 	[[nodiscard]] bool has_rotation() const override;
 	[[nodiscard]] bool can_rotate() const override;
