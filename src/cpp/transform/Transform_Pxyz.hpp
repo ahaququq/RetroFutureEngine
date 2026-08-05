@@ -1,15 +1,18 @@
 #pragma once
-#include "transform.hpp"
+#include "Transform.hpp"
 #include "utils/glm.hpp"
 
-class pos_transform: public transform {
-public:
+class Transform_Pxyz:
+	virtual public Transform
+{ public:
 	glm::vec3 pos;
 
 	// ReSharper disable once CppNonExplicitConvertingConstructor
-	pos_transform(glm::vec3 position);
+	Transform_Pxyz(glm::vec3 position = {0, 0, 0});
 
 	[[nodiscard]] glm::mat4 translation() const override;
 	[[nodiscard]] bool has_translation() const override;
 	[[nodiscard]] bool can_translate() const override;
 };
+
+using PosTransform = Transform_Pxyz;

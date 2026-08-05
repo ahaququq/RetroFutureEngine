@@ -4,9 +4,13 @@
 #include "utils/gl.hpp"
 #include "utils/glm.hpp"
 #include "graphics/buffer.hpp"
-#include "objects/camera.hpp"
+#include "objects/Camera.hpp"
 
 #include <iostream>
+
+#include "transform/Transform_Rxy.hpp"
+#include "transform/Transform_Pxyz.hpp"
+#include "transform/Transform.hpp"
 
 engine::engine() {
 	ok("Initialised RetroFutureEngine");
@@ -59,7 +63,7 @@ int engine::main() {
 	});
 
 
-	camera cam0 = camera(120.0);
+	Camera cam0 = Camera(120.0);
 
 	glm::mat4 model_mat;
 	glm::mat4 cam_mat;
@@ -67,11 +71,14 @@ int engine::main() {
 	glm::mat4 mv_mat = model_mat * view_mat;
 
 	// cam0.pos.z = 2;
-	cam0.rot = glm::rotate(glm::identity<glm::quat>(), {
-		glm::radians(0.0),
-		glm::radians(0.0),
-		glm::radians(0.0)
-	});
+	// cam0.rot = glm::rotate(glm::identity<glm::quat>(), {
+	// 	glm::radians(0.0),
+	// 	glm::radians(0.0),
+	// 	glm::radians(0.0)
+	// });
+	cam0.transform.pitch = 0;
+	cam0.transform.yaw   = 0;
+	cam0.transform.roll  = 0;
 
 	// cam0.rot = glm::identity<glm::quat>();
 
@@ -107,45 +114,51 @@ int engine::main() {
 		const float speed = 0.2;
 
 		if (main_window.getKey(GLFW_KEY_D) == GLFW_PRESS) {
-			cam0.pos += cam0.rot_camera_to_world_z_only(glm::vec3(speed * -(cam0.upside_down() * 2 - 1), 0, 0));
+			cam0.transform.pos += cam0.rot_camera_to_world_z_only(glm::vec3(speed * -(cam0.upside_down() * 2 - 1), 0, 0));
 		}
 		if (main_window.getKey(GLFW_KEY_A) == GLFW_PRESS) {
-			cam0.pos += cam0.rot_camera_to_world_z_only(glm::vec3(-speed * -(cam0.upside_down() * 2 - 1), 0, 0));
+			cam0.transform.pos += cam0.rot_camera_to_world_z_only(glm::vec3(-speed * -(cam0.upside_down() * 2 - 1), 0, 0));
 		}
 
 		if (main_window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
-			cam0.pos += cam0.rot_camera_to_world_z_only(glm::vec3(0, speed, 0));
+			cam0.transform.pos += cam0.rot_camera_to_world_z_only(glm::vec3(0, speed, 0));
 		}
 		if (main_window.getKey(GLFW_KEY_S) == GLFW_PRESS) {
-			cam0.pos += cam0.rot_camera_to_world_z_only(glm::vec3(0, -speed, 0));
+			cam0.transform.pos += cam0.rot_camera_to_world_z_only(glm::vec3(0, -speed, 0));
 		}
 
 		if (main_window.getKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
-			cam0.pos += glm::vec3(0, 0, speed * -(cam0.upside_down() * 2 - 1));
+			cam0.transform.pos += glm::vec3(0, 0, speed * -(cam0.upside_down() * 2 - 1));
 		}
 		if (main_window.getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-			cam0.pos += glm::vec3(0, 0, -speed * -(cam0.upside_down() * 2 - 1));
+			cam0.transform.pos += glm::vec3(0, 0, -speed * -(cam0.upside_down() * 2 - 1));
 		}
 
 		if (main_window.getKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(0.0, 0.0, -1.0 * -(cam0.upside_down() * 2 - 1)));
+			cam0.transform.rot_yaw(-1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		if (main_window.getKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(0.0, 0.0, 1.0 * -(cam0.upside_down() * 2 - 1)));
+			cam0.transform.rot_yaw(1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		
 		if (main_window.getKey(GLFW_KEY_UP) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(-1.0 * -(cam0.upside_down() * 2 - 1), 0.0, 0.0));
+			cam0.transform.rot_pitch_clamped(-1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		if (main_window.getKey(GLFW_KEY_DOWN) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(1.0 * -(cam0.upside_down() * 2 - 1), 0.0, 0.0));
+			cam0.transform.rot_pitch_clamped(1.0 * -(cam0.upside_down() * 2 - 1));
 		}
 		
 		if (main_window.getKey(GLFW_KEY_E) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(0.0, -1.0, 0.0));
+			cam0.transform.rot_roll(-1.0);
 		}
 		if (main_window.getKey(GLFW_KEY_Q) == GLFW_PRESS) {
 			cam0.rotate(glm::vec3(0.0, 1.0, 0.0));
+			cam0.transform.rot_roll(1.0);
 		}
 
 		model_mat = 
@@ -194,7 +207,7 @@ int engine::main() {
 
 		model_mat = 
 			glm::translate(glm::identity<glm::mat4>(), 
-				cam0.pos + cam0.rot_camera_to_world(glm::vec3(0, 5, 0))
+				cam0.transform.pos + cam0.rot_camera_to_world(glm::vec3(0, 5, 0))
 			) * 
 			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(1, 0, 0));
 		mv_mat = view_mat * cam_mat * model_mat;
@@ -264,6 +277,21 @@ int engine::main() {
 		model_mat = 
 			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 0.0, 5.0)) * 
 			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+		mv_mat = view_mat * cam_mat * model_mat;
+		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
+		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+
+
+
+		auto train = Transform_Pxyz(glm::vec3(0, 1, 0));
+		model_mat = train.matrix();
+		mv_mat = view_mat * cam_mat * model_mat;
+		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
+		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+
+		auto train2 = Transform_Pxyz(glm::vec3(0, 2, 0));
+		auto train3 = Transform_Rxy(45.0, 15.0);
+		model_mat = train3.matrix() * train2.matrix();
 		mv_mat = view_mat * cam_mat * model_mat;
 		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
 		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);

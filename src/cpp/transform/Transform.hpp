@@ -2,13 +2,17 @@
 
 #include "utils/glm.hpp"
 
-class transform {
+class Transform {
 public:
-	virtual ~transform() = default;
+	virtual ~Transform() = default;
 
 	[[nodiscard]] virtual glm::mat4 translation() const;
 	[[nodiscard]] virtual glm::mat4 rotation() const;
 	[[nodiscard]] virtual glm::mat4 scale() const;
+
+	[[nodiscard]] virtual glm::mat4 inv_translation() const;
+	[[nodiscard]] virtual glm::mat4 inv_rotation() const;
+	[[nodiscard]] virtual glm::mat4 inv_scale() const;
 
 	[[nodiscard]] virtual bool has_translation() const;
 	[[nodiscard]] virtual bool has_rotation() const;

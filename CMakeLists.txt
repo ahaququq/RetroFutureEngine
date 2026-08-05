@@ -22,12 +22,24 @@ add_executable(GuiMain
 	src/cpp/graphics/program.hpp
 	src/cpp/graphics/buffer.cpp
 	src/cpp/graphics/buffer.hpp
-	src/cpp/objects/camera.cpp
-	src/cpp/objects/camera.hpp
-	src/cpp/transform/transform.cpp
-	src/cpp/transform/transform.hpp
-	src/cpp/transform/pos_transform.cpp
-	src/cpp/transform/pos_transform.hpp
+	src/cpp/objects/Camera.cpp
+	src/cpp/objects/Camera.hpp
+	src/cpp/transform/Transform.cpp
+	src/cpp/transform/Transform.hpp
+	src/cpp/transform/Transform_Pxyz.cpp
+	src/cpp/transform/Transform_Pxyz.hpp
+	src/cpp/transform/Transform_Rxy.cpp
+	src/cpp/transform/Transform_Rxy.hpp
+	src/cpp/transform/Transform_Rxyz.cpp
+	src/cpp/transform/Transform_Rxyz.hpp
+	src/cpp/transform/Transform_Ry.cpp
+	src/cpp/transform/Transform_Ry.hpp
+	src/cpp/transform/Transform_Rx.cpp
+	src/cpp/transform/Transform_Rx.hpp
+	src/cpp/transform/Transform_Rz.cpp
+	src/cpp/transform/Transform_Rz.hpp
+	src/cpp/transform/Transform_Pxyz_Rxyz.cpp
+	src/cpp/transform/Transform_Pxyz_Rxyz.hpp
 )
 
 target_sources(GuiMain
