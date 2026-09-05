@@ -18,10 +18,11 @@ private:
     };
     std::vector<shader_ref> shaders;
     bool linked = false;
+    std::string name;
 public:
     window& ctx;
 
-	explicit program(window& context);
+	program(window& context, std::string name = "Untitled");
     program(const program &) = delete;
     program(program&&) = default;
     ~program();

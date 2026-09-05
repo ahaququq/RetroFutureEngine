@@ -49,21 +49,21 @@ void shader::addFile(const std::string &file) {
 
 bool shader::compile() {
     if (compiled) {
-        info("Shader already compiled.");
+        info("Shader \"" + name + "\" (" + std::to_string(handle) + ") already compiled.");
         return true;
     }
     ctx.makeContextCurrent();
 	const auto cstrs = new const char*[sources.size()];
     const auto counts = new int[sources.size()];
 
-    busy("Attaching sources...");
+    busy("Attaching sources to \"" + name + "\" (" + std::to_string(handle) + ") shader...");
     for (int i = 0; i < sources.size(); i++) {
         cstrs[i] = sources[i].c_str();
         counts[i] = static_cast<int>(sources[i].size());
     }
 
     glShaderSource(handle, static_cast<int>(sources.size()), cstrs, counts);
-    busy("Compiling shader...");
+    busy("Compiling \"" + name + "\" (" + std::to_string(handle) + ") shader...");
     glCompileShader(handle);
 
     delete[] cstrs;
@@ -74,7 +74,7 @@ bool shader::compile() {
         glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
         if (status) {
             compiled = true;
-            ok("Shader compiled successfully");
+            ok("Shader \"" + name + "\" (" + std::to_string(handle) + ") compiled successfully");
             return true;
         }
     }
@@ -86,7 +86,7 @@ bool shader::compile() {
 
     glGetShaderInfoLog(handle, length, &length, log);
 
-    fail(std::string{"Shader compilation failure: \n"} + log);
+    fail("Shader \"" + name + "\" (" + std::to_string(handle) + ") failed to compile: \n" + log);
 
     delete[] log;
     compiled = false;

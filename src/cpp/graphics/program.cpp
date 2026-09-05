@@ -4,7 +4,9 @@
 
 #include "utils/log.hpp"
 
-program::program(window& context): ctx(context) {
+program::program(window& context, std::string name): 
+	ctx(context), name(name) 
+{
 	ctx.makeContextCurrent();
 	program_handle = glCreateProgram();
 }
@@ -26,15 +28,15 @@ void program::clearShaders() {
 
 bool program::link() {
 	if (linked) {
-		info("Shader program already linked.");
+		info("Shader program \"" + name + "\" (" + std::to_string(program_handle) + ") already linked.");
 		return true;
 	}
-	info("Preparing shaders:");
+	info("Preparing shaders for program \"" + name + "\" (" + std::to_string(program_handle) + "):");
 	ctx.makeContextCurrent();
 
 	for (shader_ref& shader: shaders) {
 		if (!shader.ref.compile()) {
-			fail("Shader compilation failed, skipping linking");
+			fail("Shader compilation for program \"" + name + "\" (" + std::to_string(program_handle) + ") failed, skipping linking");
 			linked = false;
 			return false;
 		}
@@ -47,7 +49,7 @@ bool program::link() {
 		int status;
 		glGetProgramiv(program_handle, GL_LINK_STATUS, &status);
 		if (status) {
-			ok("Program linked successfully");
+			ok("Program \"" + name + "\" (" + std::to_string(program_handle) + ") linked successfully");
 			linked = true;
 			return true;
 		}
@@ -59,7 +61,7 @@ bool program::link() {
 	const auto log = new char[length];
 	glGetProgramInfoLog(program_handle, length, &length, log);
 
-	fail(std::string{"Program link failure: \n"} + log);
+	fail(std::string{"Program  \"" + name + "\" (" + std::to_string(program_handle) + ") failed to link: \n"} + log);
 
 	delete[] log;
 	linked = false;
