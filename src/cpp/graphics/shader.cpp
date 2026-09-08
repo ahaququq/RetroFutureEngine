@@ -6,7 +6,7 @@
 
 shader::shader(window& context, const GLenum type): ctx(context) {
     ctx.makeContextCurrent();
-    handle = glCreateShader(type);
+    GCALL(handle = glCreateShader(type));
 }
 
 shader::shader(window& context, const GLenum type, const std::string &source, const std::string& id): shader(context, type) {
@@ -22,7 +22,7 @@ shader::shader(program& add_to, const GLenum type, const std::string &source, co
 
 shader::~shader() {
     ctx.makeContextCurrent();
-    glDeleteShader(handle);
+    GCALL(glDeleteShader(handle));
 }
 
 shader shader::fromFile(window& context, const GLenum type, const std::string& name) {
@@ -62,16 +62,16 @@ bool shader::compile() {
         counts[i] = static_cast<int>(sources[i].size());
     }
 
-    glShaderSource(handle, static_cast<int>(sources.size()), cstrs, counts);
+    GCALL(glShaderSource(handle, static_cast<int>(sources.size()), cstrs, counts));
     busy("Compiling \"" + name + "\" (" + std::to_string(handle) + ") shader...");
-    glCompileShader(handle);
+    GCALL(glCompileShader(handle));
 
     delete[] cstrs;
     delete[] counts;
 
     {
         int status;
-        glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
+        GCALL(glGetShaderiv(handle, GL_COMPILE_STATUS, &status));
         if (status) {
             compiled = true;
             ok("Shader \"" + name + "\" (" + std::to_string(handle) + ") compiled successfully");
@@ -80,11 +80,11 @@ bool shader::compile() {
     }
 
     int length;
-    glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length);
+    GCALL(glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &length));
 
     const auto log = new char[length];
 
-    glGetShaderInfoLog(handle, length, &length, log);
+    GCALL(glGetShaderInfoLog(handle, length, &length, log));
 
     fail("Shader \"" + name + "\" (" + std::to_string(handle) + ") failed to compile: \n" + log);
 
@@ -96,5 +96,5 @@ bool shader::compile() {
 
 void shader::attach(const GLuint program) const {
     ctx.makeContextCurrent();
-    glAttachShader(program, handle);
+    GCALL(glAttachShader(program, handle));
 }

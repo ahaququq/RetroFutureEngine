@@ -8,12 +8,12 @@ program::program(window& context, std::string name):
 	ctx(context), name(name) 
 {
 	ctx.makeContextCurrent();
-	program_handle = glCreateProgram();
+	GCALL(program_handle = glCreateProgram());
 }
 
 program::~program() {
 	ctx.makeContextCurrent();
-	glDeleteProgram(program_handle);
+	GCALL(glDeleteProgram(program_handle));
 }
 
 void program::addShader(shader& sh) {
@@ -43,11 +43,11 @@ bool program::link() {
 		shader.ref.attach(program_handle);
 	}
 
-	glLinkProgram(program_handle);
+	GCALL(glLinkProgram(program_handle));
 
 	{
 		int status;
-		glGetProgramiv(program_handle, GL_LINK_STATUS, &status);
+		GCALL(glGetProgramiv(program_handle, GL_LINK_STATUS, &status));
 		if (status) {
 			ok("Program \"" + name + "\" (" + std::to_string(program_handle) + ") linked successfully");
 			linked = true;
@@ -56,10 +56,10 @@ bool program::link() {
 	}
 
 	int length;
-	glGetProgramiv(program_handle, GL_INFO_LOG_LENGTH, &length);
+	GCALL(glGetProgramiv(program_handle, GL_INFO_LOG_LENGTH, &length));
 
 	const auto log = new char[length];
-	glGetProgramInfoLog(program_handle, length, &length, log);
+	GCALL(glGetProgramInfoLog(program_handle, length, &length, log));
 
 	fail(std::string{"Program  \"" + name + "\" (" + std::to_string(program_handle) + ") failed to link: \n"} + log);
 
@@ -75,13 +75,17 @@ void program::use() const {
 		fail("Program not linked!");
 		throw std::runtime_error("Program not linked when calling program::use()");
 	}
-	glUseProgram(program_handle);
+	GCALL(glUseProgram(program_handle));
 }
 
 GLint program::getUniformLocation(const std::string &name) const {
-	return glGetUniformLocation(program_handle, name.c_str());
+	GLint ret;
+	GCALL(ret = glGetUniformLocation(program_handle, name.c_str()));
+	return ret;
 }
 
 GLint program::getAttribLocation(const std::string &name) const {
-	return glGetAttribLocation(program_handle, name.c_str());
+	GLint ret;
+	GCALL(ret = glGetAttribLocation(program_handle, name.c_str()));
+	return ret;
 }

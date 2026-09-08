@@ -19,12 +19,14 @@ public:
 
     template <typename T>
     void data(const std::vector<T>& data, const GLenum usage = GL_STATIC_DRAW) {
-        glBufferData(bound_to, data.size() * sizeof(data[0]), &data[0], usage);
+        GCALL(glBufferData(bound_to, data.size() * sizeof(data[0]), &data[0], usage));
     }
 
     template <typename T>
     void data(const GLenum target, const std::vector<T>& data, const GLenum usage = GL_STATIC_DRAW) {
         bind(target);
-        glBufferData(target, data.size() * sizeof(data[0]), &data[0], usage);
+        GCALL(glBufferData(target, data.size() * sizeof(data[0]), &data[0], usage));
     }
+
+    void debugInfo();
 };
