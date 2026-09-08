@@ -26,6 +26,8 @@ add_executable(GuiMain
 	src/cpp/gui/GuiObject.hpp
 	src/cpp/gui/GuiRenderer.cpp
 	src/cpp/gui/GuiRenderer.hpp
+	src/cpp/gui/GuiManager.cpp
+	src/cpp/gui/GuiManager.hpp
 	src/cpp/objects/Camera.cpp
 	src/cpp/objects/Camera.hpp
 	src/cpp/transform/Transform.cpp
