@@ -53,7 +53,7 @@ void window::swapBuffers() const {
 void window::viewport() const {
     const glm::ivec2 size = getFramebufferSize();
     makeContextCurrent();
-    glViewport(0, 0, size.x, size.y);
+    GCALL(glViewport(0, 0, size.x, size.y));
 }
 
 glm::ivec2 window::getFramebufferSize() const {
