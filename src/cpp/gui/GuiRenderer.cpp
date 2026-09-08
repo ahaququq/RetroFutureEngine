@@ -54,12 +54,7 @@ void GuiRenderer::render() {
 	GCALL(glVertexAttribPointer(material.getAttribLocation("color"), 4, GL_FLOAT, true, 0, nullptr));
     material.use();
 
-    idx_buffer.data<unsigned int>(GL_ELEMENT_ARRAY_BUFFER, {
-		0, 1, 2
-	});
-
     GCALL(glDrawArrays(GL_TRIANGLES, 0, triangles.size() * 3));
-    // glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, nullptr);
     
     // GCALL(glEnable(GL_DEPTH_CLAMP));
     GCALL(glEnable(GL_DEPTH_TEST));

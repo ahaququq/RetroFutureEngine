@@ -22,10 +22,9 @@ public:
 
     window &parent_window;
     buffer pos_buffer = buffer(parent_window);
-    std::vector<glm::vec3> pos;
     buffer col_buffer = buffer(parent_window);
+    std::vector<glm::vec3> pos;
     std::vector<glm::vec4> col;
-    buffer idx_buffer = buffer(parent_window);
     bool data_valid = false;
     program material = program(parent_window, "gui");
     shader vertex_shader = shader(material, GL_VERTEX_SHADER, load_file("src/glsl/gui.vert"), "gui.vert");
