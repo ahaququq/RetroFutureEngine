@@ -23,7 +23,7 @@ engine::~engine() {
 int engine::main() {
 	ok("Started RetroFutureEngine");
 
-	glEnable(GL_DEPTH_TEST);
+	GCALL(glEnable(GL_DEPTH_TEST));
 
 	material.link();
 
@@ -50,12 +50,15 @@ int engine::main() {
 	};
 
 	buff_vertex.data<glm::vec3>(GL_ARRAY_BUFFER, vertices);
-	glEnableVertexAttribArray(material.getAttribLocation("position"));
-	glVertexAttribPointer(material.getAttribLocation("position"), 3, GL_FLOAT, true, 0, nullptr);
+	GCALL(glEnableVertexAttribArray(material.getAttribLocation("position")));
+	GCALL(glVertexAttribPointer(material.getAttribLocation("position"), 3, GL_FLOAT, true, 0, nullptr));
 
 	buff_color.data<glm::vec3>(GL_ARRAY_BUFFER, colors);
-	glEnableVertexAttribArray(material.getAttribLocation("color"));
-	glVertexAttribPointer(material.getAttribLocation("color"), 3, GL_FLOAT, true, 0, nullptr);
+	GCALL(glEnableVertexAttribArray(material.getAttribLocation("color")));
+	GCALL(glVertexAttribPointer(material.getAttribLocation("color"), 3, GL_FLOAT, true, 0, nullptr));
+
+	info("Pos: #" + std::to_string(material.getAttribLocation("position")));
+    info("Col: #" + std::to_string(material.getAttribLocation("color")));
 
 	buff_index.data<unsigned int>(GL_ELEMENT_ARRAY_BUFFER, {
 		0, 1, 3,
@@ -77,11 +80,27 @@ int engine::main() {
 	info("Cam  Matrix: " + glm::to_string(cam0.world_to_camera()));
 	info("View Matrix: " + glm::to_string(cam0.camera_to_view(main_window.getFramebufferSize())));
 
+	gui_mgr.addTriangle({0.25f, 0.25f}, {0.75f, 0.75f}, {0.75f, 0.25f});
+	gui_mgr.addRect({-0.5, -0.5}, {0.25, 0.25}, {0.7, 0.8, 0.9, 1.0}, 0.5, 15.0);
+	gui_mgr.buildData();
+	// gui_mgr.debugInfo();
+
 	while (!main_window.shouldClose()) {
 		main_window.viewport();
-		glClearColor(1.0f, 0.5f, 0.25f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GCALL(glClearColor(1.0f, 0.5f, 0.25f, 1.0f));
+		GCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 		material.use();
+
+		buff_vertex.bind(GL_ARRAY_BUFFER);
+		GCALL(glEnableVertexAttribArray(material.getAttribLocation("position")));
+		GCALL(glVertexAttribPointer(material.getAttribLocation("position"), 3, GL_FLOAT, true, 0, nullptr));
+
+		buff_color.bind(GL_ARRAY_BUFFER);
+		GCALL(glEnableVertexAttribArray(material.getAttribLocation("color")));
+		GCALL(glVertexAttribPointer(material.getAttribLocation("color"), 3, GL_FLOAT, true, 0, nullptr));
+
+		buff_index.bind(GL_ELEMENT_ARRAY_BUFFER);
+
 
 		const float speed = 0.2;
 
@@ -127,146 +146,172 @@ int engine::main() {
 			cam0.transform.rot_roll(1.0);
 		}
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(frame), glm::vec3(0, 0, 1)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(5.1f * frame), glm::vec3(0, 1, 0));
-		cam_mat = cam0.world_to_camera();
-		view_mat = cam0.camera_to_view(main_window.getFramebufferSize());
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+		if (true) {
 
-		progress();
-		std::cout << "F: " << frame++;
-		// std::cout << " CR: " << glm::to_string(glm::degrees(glm::eulerAngles(cam0.rot)));
-		std::cout << " Vert0: " << glm::to_string(vertices[0]);
-		glm::vec4 after = model_mat * glm::vec4(vertices[0], 1.0);
-		std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
-		after = cam_mat * after;
-		std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
-		after = view_mat * after;
-		std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
-		std::cout << std::flush;
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(frame), glm::vec3(0, 0, 1)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(5.1f * frame), glm::vec3(0, 1, 0));
+			cam_mat = cam0.world_to_camera();
+			view_mat = cam0.camera_to_view(main_window.getFramebufferSize());
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(1.0, 5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(5.1f * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			progress();
+			std::cout << "F: " << frame++;
+			// std::cout << " CR: " << glm::to_string(glm::degrees(glm::eulerAngles(cam0.rot)));
+			std::cout << " Vert0: " << glm::to_string(vertices[0]);
+			glm::vec4 after = model_mat * glm::vec4(vertices[0], 1.0);
+			std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
+			after = cam_mat * after;
+			std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
+			after = view_mat * after;
+			std::cout << " -> " << glm::to_string(glm::xyz(after) / after.w);
+			std::cout << std::flush;
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(1.0, 5.0, 2.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(frame), glm::vec3(0, 0, 1));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(1.0, 5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(5.1f * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 5.0, 5.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(1, 0, 0));
-		mv_mat = view_mat * cam_mat * cam0.camera_to_world() * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), 
-				cam0.transform.pos + cam0.rot_camera_to_world(glm::vec3(0, 5, 0))
-			) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(1, 0, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(1.0, 5.0, 2.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(frame), glm::vec3(0, 0, 1));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, 0.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 5.0, 5.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(1, 0, 0));
+			mv_mat = view_mat * cam_mat * cam0.camera_to_world() * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, -5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, 0.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), 
+					cam0.transform.pos + cam0.rot_camera_to_world(glm::vec3(0, 5, 0))
+				) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(1, 0, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
 
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, 0.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, 5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, -5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, -5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, 5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, -5.0, 0.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 0.0, -5.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
-
-		model_mat = 
-			glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 0.0, 5.0)) * 
-			glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, 0.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
 
 
-		auto train = Transform_Pxyz(glm::vec3(0, 1, 0));
-		model_mat = train.matrix();
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, 5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
-		auto train2 = Transform_Pxyz(glm::vec3(0, 2, 0));
-		auto train3 = Transform_Rxy(45.0, 15.0);
-		model_mat = train3.matrix() * train2.matrix();
-		mv_mat = view_mat * cam_mat * model_mat;
-		glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat));
-		glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr);
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(5.0, -5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
 
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, 5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(-5.0, -5.0, 0.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+
+
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 0.0, -5.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+
+			model_mat = 
+				glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0, 0.0, 5.0)) * 
+				glm::rotate(glm::identity<glm::mat4>(), glm::radians<float>(10 * frame), glm::vec3(0, 1, 0));
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+
+
+
+			auto train = Transform_Pxyz(glm::vec3(0, 1, 0));
+			model_mat = train.matrix();
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+
+			auto train2 = Transform_Pxyz(glm::vec3(0, 2, 0));
+			auto train3 = Transform_Rxy(45.0, 15.0);
+			model_mat = train3.matrix() * train2.matrix();
+			mv_mat = view_mat * cam_mat * model_mat;
+			GCALL(glUniformMatrix4fv(material.getUniformLocation("model_view_mat"), 1, false, glm::value_ptr(mv_mat)));
+			GCALL(glDrawElements(GL_TRIANGLES, 2 * 3, GL_UNSIGNED_INT, nullptr));
+		}
 		// glBegin(GL_TRIANGLES);
 		// glVertex3f(-0.5f, -0.5f, 0.0f);
 		// glVertex3f( 0.5f, -0.5f, 0.0f);
 		// glVertex3f( 0.5f,  0.5f, 0.0f);
 		// glEnd();
+
+		// gui_mgr.material.use();
+		// gui_mgr.data_valid = false;
+		// gui_mgr.pos_buffer.data<float>(GL_ARRAY_BUFFER, {
+		// 	-0.5, -0.5, 0.5, 0.5,
+		// 	-0.5,  0.5, 0.5, 0.5,
+		// 	 0.5, -0.5, 0.5, 0.5
+		// });
+		// glEnableVertexAttribArray(
+		// 	gui_mgr.material.getAttribLocation("position"));
+		// glVertexAttribPointer(
+		// 	gui_mgr.material.getAttribLocation("position"), 
+		// 	3, GL_FLOAT, false, 0, nullptr);
+		// glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+		gui_mgr.render();
+
+		// GCALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+
+		// auto error_code = glGetError();
+		// if (error_code) {
+			// warn("Error #" + std::to_string(error_code));
+		// }
 
 		main_window.swapBuffers();
 		

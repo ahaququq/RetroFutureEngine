@@ -3,11 +3,17 @@
 #include <GLFW/glfw3.h>
 #include "utils/log.hpp"
 
+// Comment to disable debugging
+#define GL_DEBUG
+
+#ifdef GL_DEBUG
 #define GCALL(call) \
-    while (glGetError()) {}; \
+    beforeGL(); \
     (call); \
-    auto er = glGetError(); \
-    while (er) {\
-        warn("Error in { " + std::string{#call} + " }: " + std::to_string(er)); \
-        er = glGetError(); \
-    }
+    afterGL(#call);
+#else
+#define GCALL(call) call
+#endif
+
+void beforeGL();
+void afterGL(std::string call);

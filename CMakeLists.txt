@@ -7,6 +7,7 @@ add_executable(GuiMain
 	src/cpp/utils/files.hpp
 	src/cpp/utils/log.cpp
 	src/cpp/utils/log.hpp
+	src/cpp/utils/gl.cpp
 	src/cpp/utils/gl.hpp
 	src/cpp/utils/glm.hpp
 	src/cpp/engine.cpp
@@ -22,6 +23,9 @@ add_executable(GuiMain
 	src/cpp/graphics/program.hpp
 	src/cpp/graphics/buffer.cpp
 	src/cpp/graphics/buffer.hpp
+	src/cpp/gui/GuiObject.hpp
+	src/cpp/gui/GuiRenderer.cpp
+	src/cpp/gui/GuiRenderer.hpp
 	src/cpp/objects/Camera.cpp
 	src/cpp/objects/Camera.hpp
 	src/cpp/transform/Transform.cpp
